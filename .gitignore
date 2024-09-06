@@ -1,3 +1,5 @@
 main
 compile_commands.json
 raylib/*
+.cache
+.DS_Store
