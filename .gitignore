@@ -1,5 +1,6 @@
 main
 compile_commands.json
-raylib/*
+raylib/
 .cache
 .DS_Store
+

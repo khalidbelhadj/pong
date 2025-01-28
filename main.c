@@ -1,6 +1,7 @@
+#include <stddef.h>
+
 #include "raylib.h"
 #include "raymath.h"
-#include <stdio.h>
 
 #define WIDTH 1920
 #define HEIGHT 1080
@@ -9,7 +10,7 @@
 
 #define P_WIDTH 10
 #define P_HEIGHT 100
-#define RATE 1.05
+#define RATE 1.2
 
 struct {
     Rectangle p1_rect;
@@ -54,29 +55,10 @@ int main(void) {
     state.p2_rect = (Rectangle){WIDTH - P_WIDTH - 5, 5, P_WIDTH, P_HEIGHT};
     state.first = true;
 
+    state.p2_score = 3;
+
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(BLACK);
-
-        // Player 1
-        DrawRectangleRec(state.p1_rect, WHITE);
-
-        if (IsKeyDown(KEY_S)) {
-            state.p1_rect.y = MIN(state.p1_rect.y + 10, HEIGHT - P_HEIGHT);
-        } else if (IsKeyDown(KEY_W)) {
-            state.p1_rect.y = MAX(state.p1_rect.y - 10, 0);
-        }
-
-        // Player 2
-        DrawRectangleRec(state.p2_rect, WHITE);
-
-        if (IsKeyDown(KEY_DOWN)) {
-            state.p2_rect.y = MIN(state.p2_rect.y + 10, HEIGHT - P_HEIGHT);
-        } else if (IsKeyDown(KEY_UP)) {
-            state.p2_rect.y = MAX(state.p2_rect.y - 10, 0);
-        }
-
-        DrawLine(WIDTH / 2., 0, WIDTH / 2., HEIGHT, WHITE);
 
         // Score
         const char *text;
@@ -86,6 +68,46 @@ int main(void) {
 
         text = TextFormat("%d", state.p2_score);
         DrawText(text, WIDTH / 2. + 10, 10, 50, WHITE);
+
+        if (state.p1_score >= 3) {
+            ClearBackground(BLACK);
+            text = "Player 1 wins!";
+            DrawText(text, WIDTH / 2. - MeasureText(text, 50) / 2.,
+                     HEIGHT / 2. - 25, 50, WHITE);
+            EndDrawing();
+            continue;
+        }
+
+        if (state.p2_score >= 3) {
+            ClearBackground(BLACK);
+            text = "Player 2 wins!";
+            DrawText(text, WIDTH / 2. - MeasureText(text, 50) / 2.,
+                     HEIGHT / 2. - 25, 50, WHITE);
+            EndDrawing();
+            continue;
+        }
+
+        DrawLine(WIDTH / 2., 0, WIDTH / 2., HEIGHT, WHITE);
+
+        ClearBackground(BLACK);
+
+        // Player 1
+        DrawRectangleRounded(state.p1_rect, 5, 100, WHITE);
+
+        if (IsKeyDown(KEY_S)) {
+            state.p1_rect.y = MIN(state.p1_rect.y + 10, HEIGHT - P_HEIGHT);
+        } else if (IsKeyDown(KEY_W)) {
+            state.p1_rect.y = MAX(state.p1_rect.y - 10, 0);
+        }
+
+        // Player 2
+        DrawRectangleRounded(state.p2_rect, 5, 100, WHITE);
+
+        if (IsKeyDown(KEY_DOWN)) {
+            state.p2_rect.y = MIN(state.p2_rect.y + 10, HEIGHT - P_HEIGHT);
+        } else if (IsKeyDown(KEY_UP)) {
+            state.p2_rect.y = MAX(state.p2_rect.y - 10, 0);
+        }
 
         // Ball and player collision
         if (CheckCollisionCircleRec(state.b_pos, 8, state.p1_rect)) {
